@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tic Tac Toe</title>
+    <style>
+        *{
+            font-family:'Times New Roman', Times, serif
+        }
+
+        body {
+            text-align: center;
+        }
+        .board {
+            display:grid;
+            grid-template-columns: repeat(3, 150.5px);
+            grid-gap: 2px;
+            justify-content: center;
+        }
+        .cell {
+            width: 150px;
+            height: 150px;
+            font-size: 60px;
+            display: flex;
+            text-align: center;
+            background-color: #dfdfdf;
+            cursor: pointer;
+            justify-content: center;
+            align-items: center;
+        }
+        .cell.x {
+            color: #007bff;
+        }
+        .cell.o {
+            color: #ff0000;
+        }
+        #restart-button {
+            margin-top: 10px;
+            font-size: 18px;
+            padding: 8px 15px;
+            background-color: #ff6600;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        #restart-button:hover{
+            background-color: #29b93a;
+            transform: scale(1.05);
+        }
+        #restart-button:active{
+            transform: scale(0.98);
+        }
+        #winner-message{
+            font-size: 25px;
+            font:bold
+        }
+    </style>
+</head>
+<body>
+    <div style="display:flex; justify-content:space-between; margin: 0 200px;">
+        <h2 style="color:#007bff;" id="pointsX">X: 0</h2>
+        <h1 style="font-size: 39px; margin-bottom: 0;">Tic Tac Toe</h1>
+        <h2 style="color:#ff0000;" id="pointsO">O: 0</h2>
+    </div>
+    <h2 id="Turn"></h2>
+    <div class="board" id="tic-tac-toe-board">
+        <div class="cell" data-index="0"></div> 
+        <div class="cell" data-index="1"></div>
+        <div class="cell" data-index="2"></div>
+        <div class="cell" data-index="3"></div>
+        <div class="cell" data-index="4"></div>
+        <div class="cell" data-index="5"></div>
+        <div class="cell" data-index="6"></div>
+        <div class="cell" data-index="7"></div>
+        <div class="cell" data-index="8"></div>
+    </div>
+    <button id="restart-button">Restart Game</button>
+    <b><p id="winner-message"></p></b>
+    
+    <script>
+        const cells = document.querySelectorAll(".cell");
+        let currentPlayer = "X";
+        let gameBoard = ["", "", "", "", "", "", "", "", ""];
+        let scoreX = 0;
+        let scoreO = 0;
+        let gameWon = false;
+        
+        document.getElementById("Turn").textContent = `It's ${currentPlayer} turn`;
+        
+        function checkWinner() {
+            const winPatterns = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8],
+                [0, 3, 6], [1, 4, 7], [2, 5, 8],
+                [0, 4, 8], [2, 4, 6]
+            ];
+            
+            for (const pattern of winPatterns) {
+                const [a, b, c] = pattern;
+                if (gameBoard[a] && gameBoard[a] === gameBoard[b] && gameBoard[a] === gameBoard[c]) {
+                    cells[a].style.backgroundColor = "#8BC34A";
+                    cells[b].style.backgroundColor = "#8BC34A";
+                    cells[c].style.backgroundColor = "#8BC34A";
+                    gameWon = true;
+                    document.getElementById("winner-message").textContent = `${currentPlayer} is the winner!!`;
+                    
+                    if(currentPlayer=="X"){
+                        scoreX++;
+                        document.getElementById("pointsX").textContent = `X: ${scoreX}`;
+                        document.getElementById("Turn").textContent = `It's O turn`;
+                    }   
+                    if(currentPlayer=="O"){
+                        scoreO++;
+                        document.getElementById("pointsO").textContent = `O: ${scoreO}`;
+                        document.getElementById("Turn").textContent = `It's X turn`;
+                    }
+                    break;
+                }
+            }
+            
+            if (!gameBoard.includes("") && !gameWon) {
+                document.getElementById("winner-message").textContent = "It's a draw!";
+                if(currentPlayer=="X"){
+                        document.getElementById("Turn").textContent = `It's O turn`;
+                }
+                else{
+                    document.getElementById("Turn").textContent = `It's X turn`;
+                }
+            }
+        }
+        
+        function handleCellClick(event) {
+            const cell = event.target;
+            const index = cell.dataset.index;
+                     
+            if (!gameBoard[index] && !gameWon) {
+                cell.textContent = currentPlayer;
+                cell.classList.add(currentPlayer.toLowerCase());
+                gameBoard[index] = currentPlayer;
+                
+                checkWinner();
+                
+                currentPlayer = currentPlayer === "X" ? "O" : "X";
+                if (gameBoard.includes("") && !gameWon) {
+                    document.getElementById("Turn").textContent = `It's ${currentPlayer} turn`;
+                }
+            }
+        }
+        
+        let turn=1;
+        function restartGame() {
+            cells.forEach((cell) => {
+                cell.textContent = "";
+                cell.style.backgroundColor = "#e0e0e0";
+                cell.classList.remove("x", "o");
+            });
+            
+            gameBoard = ["", "", "", "", "", "", "", "", ""];
+            gameWon = false;
+            document.getElementById("winner-message").textContent = "";
+
+            if(turn==0){
+                currentPlayer = "X";
+                turn=1;
+            }
+            else{
+                currentPlayer = "O";
+                turn=0;
+            }
+            document.getElementById("Turn").textContent = `It's ${currentPlayer} turn`;
+        }
+
+        cells.forEach((cell) => cell.addEventListener("click", handleCellClick));
+        document.getElementById("restart-button").addEventListener("click", restartGame);
+    </script>
+</body>
+</html>
